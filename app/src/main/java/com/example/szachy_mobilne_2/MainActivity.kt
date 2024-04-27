@@ -1,20 +1,32 @@
 package com.example.szachy_mobilne_2
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+
+import com.example.szachy_mobile.Game
+import com.example.szachy_mobile.Player
+
+
+private const val tag = "MAIN_CHESS_TAG"
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        //ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-          //  val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-           // v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-           // insets
-       // }
+        val p = Game()
+        val player1 = Player(p, true)
+        val player2 = Player(p, false)
+
+        Log.d(tag, p.board.toString() + "\n")
+
+        while(!p.isGameFinished) {
+            player1.playMove()
+            Log.d(tag, p.board.toString() + "\n")
+            player2.playMove()
+            Log.d(tag, p.board.toString() + "\n")
+        }
+
     }
 }

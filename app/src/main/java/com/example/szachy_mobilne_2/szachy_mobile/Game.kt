@@ -60,7 +60,7 @@ class Game {
 
             board.movePiece(move.first,move.second)
 
-            if(move.second.first == 0 || move.second.first == 8) {
+            if(move.second.first == 0 || move.second.first == 7) {
                 if(board.rows[move.second.first][move.second.second] is Pawn) {
                     val promotion = Queen("queen",board.rows[move.second.first][move.second.second].isWhite,board)
                     board.updatePiece(move.second,promotion)
