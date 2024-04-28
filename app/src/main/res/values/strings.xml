@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">szachy_mobilne_2</string>
+    <string name="go_to_main_menu">Go to main menu</string>
 </resources>

@@ -42,6 +42,12 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
         drawBoard(canvas)
         drawPiecesAtBoard(canvas,gameController.game.board)
     }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val smaller = min(widthMeasureSpec,heightMeasureSpec)
+        setMeasuredDimension(smaller,smaller)
+    }
     fun prepareScale(canvas : Canvas) {
         val scale = 0.9f
         val boardSideLength = min(canvas.width,canvas.height) * scale
