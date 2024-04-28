@@ -30,7 +30,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
     val modelToViewConverter = ModelToViewConverter()
     var prev_x_coordinate = -1
     var prev_y_coordinate = -1
-
+    var enableMove = true
     var moving_piece_x_coordinate = -1f
     var moving_piece_y_coordinate = -1f
     override fun onDraw(canvas: Canvas) {
@@ -60,6 +60,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
         if(event == null) {return false;}
         when (event.action) {
             MotionEvent.ACTION_DOWN->{
+                if(!enableMove) {return true}
                 val cords = getSquareFromCoordinates(event.y,event.x)
                 Log.d(com.example.szachy_mobilne_2.tag,"down at ${event.y}, ${event.x}, after conversion square is ${cords.first}, ${cords.second}")
                 prev_x_coordinate = cords.first
@@ -70,6 +71,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
+                if(!enableMove) {return true}
                 if(gameController.game.isGameFinished){
                     return true
                 }
@@ -78,14 +80,18 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
                 invalidate()
             }
             MotionEvent.ACTION_UP->{
-
+                if(!enableMove) {return true}
                 val cords = getSquareFromCoordinates(event.y,event.x)
                 Log.d(com.example.szachy_mobilne_2.tag,"up at ${event.y}, ${event.x}, after conversion square is ${cords.first}, ${cords.second}")
                 val move = Pair(Pair(prev_x_coordinate,prev_y_coordinate),cords)
                 prev_x_coordinate = -1
                 prev_y_coordinate = -1
-                gameController.makeAMove(move)
+                val isMoveSuccessfull = gameController.makeAMove(move)
                 invalidate()
+                if(isMoveSuccessfull) {
+                    enableMove = false
+                    gameController.getOpponentMovePlayed()
+                }
             }
 
 

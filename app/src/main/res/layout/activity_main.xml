@@ -9,12 +9,6 @@
     >
 
 
-    <Button
-        android:id="@+id/main_menu_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/go_to_main_menu" />
-
     <com.example.szachy_mobilne_2.View.ChessView
 
         android:id="@+id/chess_view"
@@ -25,5 +19,12 @@
         >
 
     </com.example.szachy_mobilne_2.View.ChessView>
+
+    <Button
+        android:id="@+id/main_menu_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/go_to_main_menu" />
 
 </LinearLayout>
