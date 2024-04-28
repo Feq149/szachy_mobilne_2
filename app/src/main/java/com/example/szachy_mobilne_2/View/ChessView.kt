@@ -30,6 +30,9 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
     val modelToViewConverter = ModelToViewConverter()
     var prev_x_coordinate = -1
     var prev_y_coordinate = -1
+
+    var moving_piece_x_coordinate = -1f
+    var moving_piece_y_coordinate = -1f
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         prepareScale(canvas)
@@ -55,12 +58,28 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
                 Log.d(com.example.szachy_mobilne_2.tag,"down at ${event.y}, ${event.x}, after conversion square is ${cords.first}, ${cords.second}")
                 prev_x_coordinate = cords.first
                 prev_y_coordinate = cords.second
+                if(gameController.game.board.rows[cords.first][cords.second] !is EmptySquare) {
+                    moving_piece_x_coordinate = event.x
+                    moving_piece_y_coordinate = event.y
+                }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if(gameController.game.isGameFinished){
+                    return true
+                }
+                moving_piece_x_coordinate = event.x
+                moving_piece_y_coordinate = event.y
+                invalidate()
             }
             MotionEvent.ACTION_UP->{
+
                 val cords = getSquareFromCoordinates(event.y,event.x)
                 Log.d(com.example.szachy_mobilne_2.tag,"up at ${event.y}, ${event.x}, after conversion square is ${cords.first}, ${cords.second}")
                 val move = Pair(Pair(prev_x_coordinate,prev_y_coordinate),cords)
+                prev_x_coordinate = -1
+                prev_y_coordinate = -1
                 gameController.makeAMove(move)
+                invalidate()
             }
 
 
@@ -136,11 +155,17 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
     fun drawPiecesAtBoard(canvas:Canvas,board:Board) {
         for (i in 0..7) {
             for (j in 0..7) {
-                val piece =
-                    modelToViewConverter.getViewPieceFromModelPiece(board.rows[i][j]) ?: continue
-                drawPieceAtSquare(canvas,i,j,piece)
+                val piece = modelToViewConverter.getViewPieceFromModelPiece(board.rows[i][j]) ?: continue
+                if(i == prev_x_coordinate && j == prev_y_coordinate) {
+                    canvas.drawBitmap(pieceToBitmapConverter[piece]!! ,null, RectF(moving_piece_x_coordinate - bok/2,moving_piece_y_coordinate- bok/2,moving_piece_x_coordinate + bok/2,moving_piece_y_coordinate + bok/2),paint)
+                    continue
+                }
+                drawPieceAtSquare(canvas, i, j, piece)
+
+
             }
         }
+
     }
 
     fun drawStartingPosition(canvas: Canvas) {

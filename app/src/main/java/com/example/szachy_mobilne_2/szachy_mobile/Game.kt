@@ -81,6 +81,9 @@ class Game {
             if(isDrawByInsufficientMaterial()) {
                 isGameFinished = true
             }
+            if(getLegalMoves(whiteToMove).isEmpty()) {
+                isGameFinished = true
+            }
             return true
         } else {
             return false
