@@ -22,8 +22,6 @@ class MainActivity : AppCompatActivity() {
         val gameController = GameController(findViewById<ChessView>(R.id.chess_view))
         gameController.chessView.invalidate()
 
-        val player1 = Player(gameController, true)
-        val player2 = Player(gameController, false)
 
         Log.d(tag, gameController.game.board.toString() + "\n")
         /*

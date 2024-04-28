@@ -33,6 +33,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
     var enableMove = true
     var moving_piece_x_coordinate = -1f
     var moving_piece_y_coordinate = -1f
+    val colors = arrayOf(light_color,dark_color)
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         prepareScale(canvas)
@@ -60,7 +61,10 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
         if(event == null) {return false;}
         when (event.action) {
             MotionEvent.ACTION_DOWN->{
-                if(!enableMove) {return true}
+                if(!enableMove) {
+                    Log.d(com.example.szachy_mobilne_2.tag,"trying to move on not player's turn")
+                    return true
+                }
                 val cords = getSquareFromCoordinates(event.y,event.x)
                 Log.d(com.example.szachy_mobilne_2.tag,"down at ${event.y}, ${event.x}, after conversion square is ${cords.first}, ${cords.second}")
                 prev_x_coordinate = cords.first
@@ -109,7 +113,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
     }
     fun drawBoard(canvas:Canvas) {
 
-        val colors = arrayOf(light_color,dark_color)
+
         for(j in 0..7) {
             for (i in 0..7) {
                 canvas.drawRect(
@@ -163,6 +167,10 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
     }
     fun drawPieceAtSquare(canvas:Canvas,x:Int,y:Int, piece: Pieces) {
         canvas.drawBitmap(pieceToBitmapConverter[piece]!! ,null, RectF(odleglosc_od_lewej + y * bok,odleglosc_od_gory + x * bok,odleglosc_od_lewej + (y + 1)*bok,odleglosc_od_gory + (x + 1)*bok),paint)
+    }
+
+    fun drawPiecesForCorrectPerspective(canvas:Canvas,board:Board) {
+
     }
     fun drawPiecesAtBoard(canvas:Canvas,board:Board) {
         for (i in 0..7) {

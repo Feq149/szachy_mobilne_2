@@ -60,7 +60,59 @@ class Game {
         if(legalMoves.contains(move)) {
             val isCapture = board.rows[move.second.first][move.second.second] !is EmptySquare
             val isPawn = board.rows[move.first.first][move.first.second] is Pawn
+            val originalPiece = board.rows[move.first.first][move.first.second]
+            if(originalPiece is King) {
+                if(originalPiece.isWhite) {
+                    isWhiteLongCastlesLegal = false
+                    isWhiteShortCastlesLegal = false
+                } else {
+                    isBlackShortCastlesLegal = false
+                    isBlackLongCastlesLegal = false
+                }
+            }
+            if(originalPiece is Rook) {
+                if(move.first.first == 0 && move.first.second == 0) {
+                    isBlackLongCastlesLegal = false
+                }
+                if(move.first.first == 0 && move.first.second == 7) {
+                    isBlackShortCastlesLegal = false
+                }
+                if(move.first.first == 7 && move.first.second == 0) {
+                    isWhiteLongCastlesLegal = false
+                }
+                if(move.first.first == 7 && move.first.second == 7) {
+                    isWhiteShortCastlesLegal = false
+                }
+            }
+            if(move.second.first == 0 && move.second.second == 0) {
+                isBlackLongCastlesLegal = false
+            }
+            if(move.second.first == 0 && move.second.second == 7) {
+                isBlackShortCastlesLegal = false
+            }
+            if(move.second.first == 7 && move.second.second == 0) {
+                isWhiteLongCastlesLegal = false
+            }
+            if(move.second.first == 7 && move.second.second == 7) {
+                isWhiteShortCastlesLegal = false
+            }
+            if(originalPiece.isWhite && originalPiece is King) {
+                if(move.first == Pair(7,4) && move.second == Pair(7,6)) {
+                    board.movePiece(Pair(7,7), Pair(7,5))
+                }
+                if(move.first == Pair(7,4) && move.second == Pair(7,2)) {
+                    board.movePiece(Pair(7,0), Pair(7,3))
+                }
 
+            }
+            if(!originalPiece.isWhite && originalPiece is King) {
+                if(move.first == Pair(0,4) && move.second == Pair(0,6)) {
+                    board.movePiece(Pair(0,7), Pair(0,5))
+                }
+                if(move.first == Pair(0,4) && move.second == Pair(0,2)) {
+                    board.movePiece(Pair(0,0), Pair(0,3))
+                }
+            }
             board.movePiece(move.first,move.second)
 
             if(move.second.first == 0 || move.second.first == 7) {
@@ -681,6 +733,76 @@ class Game {
                 filtered.add(move)
             }
         }
+
+        if(forWhite) {
+            if(isWhiteShortCastlesLegal) {
+                if(board.rows[7][5] is EmptySquare && board.rows[7][6] is EmptySquare) {
+                    var canWhiteCastleShort = true
+                    tempBoard.updateFromAnother(board)
+                    tempBoard.movePiece(Pair(7,4),Pair(7,5))
+                    canWhiteCastleShort = canWhiteCastleShort && !isKingAttacked(tempBoard,forWhite)
+                    tempBoard.movePiece(Pair(7,5),Pair(7,6))
+                    canWhiteCastleShort = canWhiteCastleShort && !isKingAttacked(tempBoard,forWhite)
+                    if(canWhiteCastleShort) {
+                        filtered.add(Pair(Pair(7,4),Pair(7,6)))
+                    }
+                }
+            }
+        }
+
+        if(forWhite) {
+            if(isWhiteLongCastlesLegal) {
+                if(board.rows[7][3] is EmptySquare && board.rows[7][2] is EmptySquare&& board.rows[7][1] is EmptySquare) {
+                    var canWhiteCastleLong = true
+                    tempBoard.updateFromAnother(board)
+                    tempBoard.movePiece(Pair(7,4),Pair(7,3))
+                    canWhiteCastleLong = canWhiteCastleLong && !isKingAttacked(tempBoard,forWhite)
+                    tempBoard.movePiece(Pair(7,5),Pair(7,2))
+                    canWhiteCastleLong = canWhiteCastleLong && !isKingAttacked(tempBoard,forWhite)
+
+                    if(canWhiteCastleLong) {
+                        filtered.add(Pair(Pair(7,4),Pair(7,2)))
+                    }
+                }
+            }
+        }
+
+
+
+        if(!forWhite) {
+            if(isBlackShortCastlesLegal) {
+                if(board.rows[0][5] is EmptySquare && board.rows[0][6] is EmptySquare) {
+                   var  canBlackCastleShort = true
+                    tempBoard.updateFromAnother(board)
+                    tempBoard.movePiece(Pair(0,4),Pair(0,5))
+                    canBlackCastleShort = canBlackCastleShort && !isKingAttacked(tempBoard,!forWhite)
+                    tempBoard.movePiece(Pair(0,5),Pair(0,6))
+                    canBlackCastleShort = canBlackCastleShort && !isKingAttacked(tempBoard,!forWhite)
+                    if(canBlackCastleShort) {
+                        filtered.add(Pair(Pair(0,4),Pair(0,6)))
+                    }
+                }
+            }
+        }
+
+        if(!forWhite) {
+            if(isBlackLongCastlesLegal) {
+                if(board.rows[0][3] is EmptySquare && board.rows[0][2] is EmptySquare&& board.rows[0][1] is EmptySquare) {
+                    var canBlackCastleLong = true
+                    tempBoard.updateFromAnother(board)
+                    tempBoard.movePiece(Pair(0,4),Pair(0,3))
+                    canBlackCastleLong = canBlackCastleLong && !isKingAttacked(tempBoard,!forWhite)
+                    tempBoard.movePiece(Pair(0,5),Pair(0,2))
+                    canBlackCastleLong = canBlackCastleLong && !isKingAttacked(tempBoard,!forWhite)
+
+
+                    if(canBlackCastleLong) {
+                        filtered.add(Pair(Pair(0,4),Pair(0,2)))
+                    }
+                }
+            }
+        }
+
         return filtered
     }
 
