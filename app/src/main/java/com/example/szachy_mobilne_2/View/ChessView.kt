@@ -14,6 +14,7 @@ import android.view.View
 import com.example.szachy_mobile.Board
 import com.example.szachy_mobile.EmptySquare
 import com.example.szachy_mobile.Game
+import com.example.szachy_mobilne_2.FullGameControl.GameController
 import com.example.szachy_mobilne_2.R
 import kotlin.math.min
 
@@ -25,8 +26,10 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
     val dark_color = Paint()
     val pieceToBitmapConverter = mutableMapOf<Pieces,Bitmap>()
     val paint = Paint()
-    var game = Game()
+    var gameController = GameController(this)
     val modelToViewConverter = ModelToViewConverter()
+    var prev_x_coordinate = -1
+    var prev_y_coordinate = -1
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         prepareScale(canvas)
@@ -34,10 +37,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
         light_color.color = Color.LTGRAY
         dark_color.color = Color.CYAN
         drawBoard(canvas)
-        drawPiecesAtBoard(canvas,game.board)
-    }
-    fun setBoard(game: Game) {
-        this.game = game
+        drawPiecesAtBoard(canvas,gameController.game.board)
     }
     fun prepareScale(canvas : Canvas) {
         val scale = 0.9f
@@ -53,10 +53,14 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
             MotionEvent.ACTION_DOWN->{
                 val cords = getSquareFromCoordinates(event.y,event.x)
                 Log.d(com.example.szachy_mobilne_2.tag,"down at ${event.y}, ${event.x}, after conversion square is ${cords.first}, ${cords.second}")
+                prev_x_coordinate = cords.first
+                prev_y_coordinate = cords.second
             }
             MotionEvent.ACTION_UP->{
                 val cords = getSquareFromCoordinates(event.y,event.x)
                 Log.d(com.example.szachy_mobilne_2.tag,"up at ${event.y}, ${event.x}, after conversion square is ${cords.first}, ${cords.second}")
+                val move = Pair(Pair(prev_x_coordinate,prev_y_coordinate),cords)
+                gameController.makeAMove(move)
             }
 
 

@@ -11,11 +11,18 @@ class GameController(chessView: ChessView) {
     val chessView : ChessView
     init{
         this.chessView = chessView
-        this.chessView.game = game
+        this.chessView.gameController = this
     }
 
     fun playTheGame() {
 
+    }
+
+    fun makeAMove(move: Pair<Pair<Int,Int>,Pair<Int,Int>>) {
+        val isMoveSuccessfull = game.makeAMove(move)
+        if(isMoveSuccessfull) {
+            chessView.invalidate()
+        }
     }
 
 
