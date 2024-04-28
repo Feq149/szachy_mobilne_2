@@ -8,25 +8,69 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import com.example.szachy_mobile.Board
+import com.example.szachy_mobile.EmptySquare
+import com.example.szachy_mobile.Game
 import com.example.szachy_mobilne_2.R
+import kotlin.math.min
 
 class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
-    private val bok = 130f
-    val odleglosc_od_lewej = 25f
-    val odleglosc_od_gory = 500f
+    var bok = 130f
+    var odleglosc_od_lewej = 25f
+    var odleglosc_od_gory = 500f
     val light_color = Paint()
     val dark_color = Paint()
     val pieceToBitmapConverter = mutableMapOf<Pieces,Bitmap>()
     val paint = Paint()
+    var game = Game()
+    val modelToViewConverter = ModelToViewConverter()
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        prepareScale(canvas)
         prepareBitmaps()
         light_color.color = Color.LTGRAY
         dark_color.color = Color.CYAN
         drawBoard(canvas)
-        drawStartingPosition(canvas)
+        drawPiecesAtBoard(canvas,game.board)
+    }
+    fun setBoard(game: Game) {
+        this.game = game
+    }
+    fun prepareScale(canvas : Canvas) {
+        val scale = 0.9f
+        val boardSideLength = min(canvas.width,canvas.height) * scale
+        bok = boardSideLength / 8f
+        odleglosc_od_lewej = (canvas.width - boardSideLength) / 2f
+        odleglosc_od_gory = (canvas.height - boardSideLength) / 2f
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if(event == null) {return false;}
+        when (event.action) {
+            MotionEvent.ACTION_DOWN->{
+                val cords = getSquareFromCoordinates(event.y,event.x)
+                Log.d(com.example.szachy_mobilne_2.tag,"down at ${event.y}, ${event.x}, after conversion square is ${cords.first}, ${cords.second}")
+            }
+            MotionEvent.ACTION_UP->{
+                val cords = getSquareFromCoordinates(event.y,event.x)
+                Log.d(com.example.szachy_mobilne_2.tag,"up at ${event.y}, ${event.x}, after conversion square is ${cords.first}, ${cords.second}")
+            }
+
+
+
+
+        }
+
+
+        return true;
+    }
+    fun getSquareFromCoordinates(pionowa: Float, pozioma: Float) :Pair<Int,Int> {
+        val resX = ((pionowa - odleglosc_od_gory)/bok).toInt()
+        val resY = ((pozioma - odleglosc_od_lewej)/bok).toInt()
+        return Pair(resX,resY)
     }
     fun drawBoard(canvas:Canvas) {
 
@@ -88,7 +132,9 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
     fun drawPiecesAtBoard(canvas:Canvas,board:Board) {
         for (i in 0..7) {
             for (j in 0..7) {
-
+                val piece =
+                    modelToViewConverter.getViewPieceFromModelPiece(board.rows[i][j]) ?: continue
+                drawPieceAtSquare(canvas,i,j,piece)
             }
         }
     }

@@ -49,6 +49,9 @@ class Game {
     }
     fun makeAMove(move:Pair<Pair<Int,Int>,Pair<Int,Int>>):Boolean{
         if(isGameFinished) {return false}
+        if(move.first == move.second) {
+            return false
+        }
         val legalMoves = getLegalMoves(whiteToMove)
         if(legalMoves.isEmpty()) {
             isGameFinished = true

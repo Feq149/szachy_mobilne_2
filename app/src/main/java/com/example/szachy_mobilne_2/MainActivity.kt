@@ -8,7 +8,7 @@ import com.example.szachy_mobile.Game
 import com.example.szachy_mobile.Player
 
 
-private const val tag = "MAIN_CHESS_TAG"
+const val tag = "MAIN_CHESS_TAG"
 
 
 class MainActivity : AppCompatActivity() {
