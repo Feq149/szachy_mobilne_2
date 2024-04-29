@@ -9,11 +9,16 @@ import kotlin.concurrent.timerTask
 class GameController(chessView: ChessView) {
 
     val game = Game()
-    val userIsWhite = true
+    val userIsWhite = listOf(true,false).random()
     val chessView : ChessView
     init{
         this.chessView = chessView
         this.chessView.gameController = this
+        this.chessView.enableMove = this.userIsWhite
+        if(!userIsWhite) {
+            this.chessView.invalidate()
+            getOpponentMovePlayed()
+        }
 
     }
 

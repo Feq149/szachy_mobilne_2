@@ -109,11 +109,21 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
     fun getSquareFromCoordinates(pionowa: Float, pozioma: Float) :Pair<Int,Int> {
         val resX = ((pionowa - odleglosc_od_gory)/bok).toInt()
         val resY = ((pozioma - odleglosc_od_lewej)/bok).toInt()
-        return Pair(resX,resY)
+        if(gameController.userIsWhite) {
+            return Pair(resX, resY)
+        }
+        return Pair(7 - resX,7 - resY)
     }
     fun drawBoard(canvas:Canvas) {
+        if(gameController.userIsWhite) {
+            drawBoardIfUserWhite(canvas)
+        }
+        else {
+            drawBoardIfUserBlack(canvas)
+        }
 
-
+    }
+    fun drawBoardIfUserWhite(canvas:Canvas) {
         for(j in 0..7) {
             for (i in 0..7) {
                 canvas.drawRect(
@@ -122,6 +132,20 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
                     odleglosc_od_lewej + (i + 1) * bok,
                     odleglosc_od_gory + (j + 1)*bok,
                     colors[(i + j) % 2]
+                )
+
+            }
+        }
+    }
+    fun drawBoardIfUserBlack(canvas: Canvas) {
+        for(j in 0..7) {
+            for (i in 0..7) {
+                canvas.drawRect(
+                    odleglosc_od_lewej + i * bok,
+                    odleglosc_od_gory + j * bok ,
+                    odleglosc_od_lewej + (i + 1) * bok,
+                    odleglosc_od_gory + (j + 1)*bok,
+                    colors[(i + j + 1) % 2]
                 )
 
             }
@@ -169,10 +193,16 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
         canvas.drawBitmap(pieceToBitmapConverter[piece]!! ,null, RectF(odleglosc_od_lewej + y * bok,odleglosc_od_gory + x * bok,odleglosc_od_lewej + (y + 1)*bok,odleglosc_od_gory + (x + 1)*bok),paint)
     }
 
-    fun drawPiecesForCorrectPerspective(canvas:Canvas,board:Board) {
+
+    fun drawPiecesAtBoard(canvas:Canvas,board:Board) {
+        if(gameController.userIsWhite) {
+            drawPiecesAtBoardIfUserWhite(canvas,board)
+        } else {
+            drawPiecesAtBoardIfUserBlack(canvas,board)
+        }
 
     }
-    fun drawPiecesAtBoard(canvas:Canvas,board:Board) {
+    fun drawPiecesAtBoardIfUserWhite(canvas:Canvas,board:Board) {
         for (i in 0..7) {
             for (j in 0..7) {
                 val piece = modelToViewConverter.getViewPieceFromModelPiece(board.rows[i][j]) ?: continue
@@ -185,10 +215,23 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
 
             }
         }
+    }
+    fun drawPiecesAtBoardIfUserBlack(canvas:Canvas,board:Board) {
+        for (i in 0..7) {
+            for (j in 0..7) {
+                val piece = modelToViewConverter.getViewPieceFromModelPiece(board.rows[7 - i][7 - j]) ?: continue
+                if(7 - i == prev_x_coordinate &&7 -  j == prev_y_coordinate) {
+                    canvas.drawBitmap(pieceToBitmapConverter[piece]!! ,null, RectF(moving_piece_x_coordinate - bok/2,moving_piece_y_coordinate- bok/2,moving_piece_x_coordinate + bok/2,moving_piece_y_coordinate + bok/2),paint)
+                    continue
+                }
+                drawPieceAtSquare(canvas, i, j, piece)
 
+
+            }
+        }
     }
 
-    fun drawStartingPosition(canvas: Canvas) {
+    fun drawStartingPosition(canvas: Canvas) { //deprecated
         for(i in 0..7) {
             var pieceToDraw : Pieces
             if(i == 0 || i == 7) {
