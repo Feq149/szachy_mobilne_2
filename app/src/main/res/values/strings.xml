@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">szachy_mobilne_2</string>
     <string name="go_to_main_menu">Go to main menu</string>
+    <string name="x">X</string>
+    <string name="close">close</string>
+    <string name="you_win">you win</string>
 </resources>

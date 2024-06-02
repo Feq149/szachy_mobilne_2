@@ -8,11 +8,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-
+import com.example.szachy_mobilne_2.database.DatabaseOfGames
+ var database : DatabaseOfGames? = null
 class main_menu : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        database = DatabaseOfGames.getDatabase(this)
         setContentView(R.layout.activity_main_menu)
         configurePlayGameButton()
     }

@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DatabaseWriter {
     @Upsert
-    fun upsertGame(databaseGame: GameDb)
+    suspend fun upsertGame(databaseGame: GameDb)
     @Delete
-    fun deleteGame(databaseGame: GameDb)
+    suspend fun deleteGame(databaseGame: GameDb)
 
     @Query("SELECT * FROM GameDb ORDER BY date DESC")
-    fun getGamesOrderedByDate(databaseGame: GameDb) : Flow<List<GameDb>>
+    fun getGamesOrderedByDate() : Flow<List<GameDb>>
 
 }
