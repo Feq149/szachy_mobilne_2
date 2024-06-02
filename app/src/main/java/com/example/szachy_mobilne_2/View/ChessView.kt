@@ -67,11 +67,14 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
                 }
                 val cords = getSquareFromCoordinates(event.y,event.x)
                 Log.d(com.example.szachy_mobilne_2.tag,"down at ${event.y}, ${event.x}, after conversion square is ${cords.first}, ${cords.second}")
-                prev_x_coordinate = cords.first
-                prev_y_coordinate = cords.second
-                if(gameController.game.board.rows[cords.first][cords.second] !is EmptySquare) {
-                    moving_piece_x_coordinate = event.x
-                    moving_piece_y_coordinate = event.y
+
+                val piece = gameController.game.board.rows[cords.first][cords.second]
+                moving_piece_x_coordinate = event.x
+                moving_piece_y_coordinate = event.y
+                if(piece !is EmptySquare && piece.isWhite == gameController.userIsWhite) {
+                    prev_x_coordinate = cords.first
+                    prev_y_coordinate = cords.second
+
                 }
             }
             MotionEvent.ACTION_MOVE -> {
