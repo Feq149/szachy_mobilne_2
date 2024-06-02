@@ -3,6 +3,7 @@ package com.example.szachy_mobilne_2.FullGameControl
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.ViewModel
 import com.example.szachy_mobile.Game
 import com.example.szachy_mobilne_2.MainActivity
 import com.example.szachy_mobilne_2.View.ChessView
@@ -52,9 +53,10 @@ class GameController(chessView: ChessView) {
             gameResult = -1
         }
         val gameDb = GameDb(gameResult,userIsWhite,gameHistory,date.toString())
-        //viewModelScope.launch{
-          //  database?.dao?.upsertGame(gameDb)
-        //}
+        GlobalScope.launch{
+            database?.dao?.upsertGame(gameDb)
+        }
+
 
     }
 

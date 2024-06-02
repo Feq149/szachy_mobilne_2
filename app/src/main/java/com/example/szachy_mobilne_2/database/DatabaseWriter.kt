@@ -14,6 +14,6 @@ interface DatabaseWriter {
     suspend fun deleteGame(databaseGame: GameDb)
 
     @Query("SELECT * FROM GameDb ORDER BY date DESC")
-    fun getGamesOrderedByDate() : Flow<List<GameDb>>
+    fun getGamesOrderedByDate() : List<GameDb>
 
 }

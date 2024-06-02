@@ -26,7 +26,7 @@ abstract class DatabaseOfGames : RoomDatabase() {
                     context.applicationContext,
                     DatabaseOfGames::class.java,
                     "note_database"
-                ).build()
+                ).allowMainThreadQueries().build()
                 INSTANCE = instance
                 instance
             }
