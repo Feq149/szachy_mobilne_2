@@ -5,13 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.example.szachy_mobilne_2.View.DatabaseView
+
         android:id="@+id/database_view"
-        android:layout_width="409dp"
-        android:layout_height="889dp"
-        android:layout_gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+
+        >
+
+    </com.example.szachy_mobilne_2.View.DatabaseView>
 </LinearLayout>

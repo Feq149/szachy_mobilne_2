@@ -5,4 +5,5 @@
     <string name="close">close</string>
     <string name="you_win">you win</string>
     <string name="start_the_game">Start The Game</string>
+    <string name="view_games_played">view games played</string>
 </resources>

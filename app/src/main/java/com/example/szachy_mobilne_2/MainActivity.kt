@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //broken
+    //broken, to be deleted probably
     public fun showVictoryPopup() {
         var view = View.inflate(this,R.layout.victoryscreen,null)
         val close = view.findViewById<Button>(R.id.close_victory_screen)

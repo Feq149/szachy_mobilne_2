@@ -1,7 +1,5 @@
 package com.example.szachy_mobilne_2
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +17,7 @@ class main_menu : AppCompatActivity() {
         database = DatabaseOfGames.getDatabase(this)
         setContentView(R.layout.activity_main_menu)
         configurePlayGameButton()
+        configureDatabaseButton()
         var list : List<GameDb>? = null
 
             list = database!!.dao.getGamesOrderedByDate()
@@ -32,6 +31,13 @@ class main_menu : AppCompatActivity() {
             }
         }
 
+    }
+    fun configureDatabaseButton() {
+        val button = findViewById<Button>(R.id.view_games_played_button)
+        button.setOnClickListener {
+            val intent = Intent(this,DatabaseActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     fun configurePlayGameButton() {
