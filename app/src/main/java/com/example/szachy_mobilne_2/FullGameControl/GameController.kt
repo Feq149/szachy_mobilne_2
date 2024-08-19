@@ -1,23 +1,14 @@
 package com.example.szachy_mobilne_2.FullGameControl
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.example.szachy_mobile.Game
-import com.example.szachy_mobilne_2.MainActivity
 import com.example.szachy_mobilne_2.View.ChessView
 import com.example.szachy_mobilne_2.database
 import com.example.szachy_mobilne_2.database.GameDb
-import com.example.szachy_mobilne_2.main_menu
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import java.sql.Date
 import java.util.Timer
 
-import java.util.logging.Handler
 import kotlin.concurrent.timerTask
 
 class GameController(chessView: ChessView) {
@@ -43,19 +34,22 @@ class GameController(chessView: ChessView) {
         if(!game.isGameFinished){
             return
         }
-        var gameResult = 0
+        var resultOfGameFromPlayersPerspective = 0
         if(game.isDraw()) {
-            gameResult = 0
+            resultOfGameFromPlayersPerspective = 0
         }
         else if((game.didWhiteWin() && userIsWhite)||(!game.didWhiteWin() && !userIsWhite)) {
-            gameResult = 1
+            resultOfGameFromPlayersPerspective = 1
         } else {
-            gameResult = -1
+            resultOfGameFromPlayersPerspective = -1
         }
-        val gameDb = GameDb(gameResult,userIsWhite,gameHistory,date.toString())
-        GlobalScope.launch{
+        val gameDb = GameDb(resultOfGameFromPlayersPerspective,userIsWhite,gameHistory,date.toString())
+        chessView.findViewTreeLifecycleOwner()?.lifecycleScope?.launch {
             database?.dao?.upsertGame(gameDb)
         }
+        chessView.showResultPopup(resultOfGameFromPlayersPerspective);
+
+
 
 
     }
@@ -65,13 +59,18 @@ class GameController(chessView: ChessView) {
             return
         }
         Timer().schedule(timerTask {
-            val moveWasMade = game.makeAMove(game.getLegalMoves(!userIsWhite).random())
+            val move = game.getLegalMoves(!userIsWhite).random()
+            val moveWasMade = game.makeAMove(move)
             if(!game.isGameFinished) {
                 chessView.enableMove = true
             }
             chessView.invalidate()
-            if(moveWasMade && game.isGameFinished) {
-                performFinishingOperations()
+
+            if(moveWasMade) {
+                gameHistory += moveToStringConverter(move)
+                if(game.isGameFinished) {
+                    performFinishingOperations()
+                }
             }
 
         }, 2000)

@@ -1,5 +1,6 @@
 package com.example.szachy_mobilne_2.View
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -13,7 +14,6 @@ import android.view.MotionEvent
 import android.view.View
 import com.example.szachy_mobile.Board
 import com.example.szachy_mobile.EmptySquare
-import com.example.szachy_mobile.Game
 import com.example.szachy_mobilne_2.FullGameControl.GameController
 import com.example.szachy_mobilne_2.R
 import kotlin.math.min
@@ -87,6 +87,8 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
                 invalidate()
             }
             MotionEvent.ACTION_UP->{
+               
+
                 if(!enableMove) {return true}
                 val cords = getSquareFromCoordinates(event.y,event.x)
                 Log.d(com.example.szachy_mobilne_2.tag,"up at ${event.y}, ${event.x}, after conversion square is ${cords.first}, ${cords.second}")
@@ -269,6 +271,25 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context,attrs) {
             drawPieceAtSquare(canvas,1,i, Pieces.black_pawn)
             drawPieceAtSquare(canvas,6,i, Pieces.white_pawn)
         }
+
+    }
+
+    fun showResultPopup(resultOfTheGameFromPlayersPerspective: Int) {
+        val alertDialogBuilder = AlertDialog.Builder(context)
+        if(resultOfTheGameFromPlayersPerspective > 0) {
+            alertDialogBuilder.setMessage("You win!")
+        }
+        else if(resultOfTheGameFromPlayersPerspective == 0) {
+            alertDialogBuilder.setMessage("Draw!")
+        } else {
+            alertDialogBuilder.setMessage("You lost!")
+        }
+
+        alertDialogBuilder.setPositiveButton("ok") {_,_ ->
+
+
+        }
+        alertDialogBuilder.create().show()
 
     }
 

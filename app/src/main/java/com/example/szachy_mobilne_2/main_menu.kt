@@ -1,23 +1,14 @@
 package com.example.szachy_mobilne_2
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.example.szachy_mobilne_2.database.DatabaseOfGames
 import com.example.szachy_mobilne_2.database.GameDb
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 
 
 var database : DatabaseOfGames? = null
@@ -48,6 +39,15 @@ class main_menu : AppCompatActivity() {
         button.setOnClickListener {
             val intent =  Intent(this,MainActivity::class.java)
             startActivity(intent)
+            /*val alertDialogBuilder = AlertDialog.Builder(this)
+            alertDialogBuilder.setMessage("You win!")
+            alertDialogBuilder.setPositiveButton("ok") {_,_ ->
+
+
+            }
+            alertDialogBuilder.create().show()
+           */
         }
+
     }
 }
