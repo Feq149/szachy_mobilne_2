@@ -8,9 +8,9 @@ import java.sql.Date
 data class GameDb(var result:Int = 0,
                   var userIsWhite :Boolean = true,
                   var game :String = "", var date : String,
-
                   @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
+                  var id: Int = 0,
+                  var opponentName: String = "random"
 )
 
 

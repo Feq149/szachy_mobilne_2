@@ -15,6 +15,8 @@ class DatabaseActivity : AppCompatActivity() {
         setContentView(R.layout.database_listview)
         val databaseListView : ListView = findViewById(R.id.database_listview_id)
         val testStrings = arrayListOf("aaaa","bbbbb","weeeeeeeewoooooo")
+        val databaseGames = database!!.dao.getGamesOrderedByDate();
+
         testStrings.add("111")
         testStrings.add("111")
         testStrings.add("111")
@@ -45,7 +47,7 @@ class DatabaseActivity : AppCompatActivity() {
         testStrings.add("111")
         testStrings.add("111")
         testStrings.add("111")
-        val adapter = ArrayAdapter(applicationContext,android.R.layout.simple_list_item_1,testStrings)
+        val adapter = ArrayAdapter(applicationContext,android.R.layout.simple_list_item_1,databaseGames)
         databaseListView.adapter = adapter
     }
 }
