@@ -21,7 +21,7 @@ class DatabaseActivity : AppCompatActivity() {
             val selectedGame = databaseGames[position]
 
             val intent = Intent(this, DatabaseGameReplayActivity::class.java)
-
+            intent.putExtra("game_id", selectedGame.id)
             // Pass the game object to the new activity
             //intent.putExtra("selected_game", selectedGame)
 

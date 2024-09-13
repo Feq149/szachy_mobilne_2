@@ -2,6 +2,7 @@ package com.example.szachy_mobilne_2.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 import java.sql.Date
 
 @Entity
