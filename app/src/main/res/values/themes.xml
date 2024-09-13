@@ -4,6 +4,30 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
+    <!-- Custom AlertDialog style -->
+    <style name="DeleteGameDialogue" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/white</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:elevation">8dp</item>
+        <item name="android:backgroundDimAmount">0.4</item>
+        <item name="android:windowMinWidthMajor">280dp</item>
+        <item name="android:windowMinWidthMinor">280dp</item>
+        <item name="android:buttonBarStyle">@style/CustomButtonBar</item>
+    </style>
 
+    <!-- Custom Button Bar style -->
+    <style name="CustomButtonBar" parent="Widget.AppCompat.ButtonBar.AlertDialog">
+        <item name="android:buttonBarButtonStyle">@style/CustomButton</item>
+        <item name="android:buttonBarStyle">@style/CustomButtonBar</item>
+    </style>
+
+    <!-- Custom Button style -->
+    <style name="CustomButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:padding">12dp</item>
+    </style>
     <style name="Theme.Szachy_mobilne_2" parent="Base.Theme.Szachy_mobilne_2" />
 </resources>

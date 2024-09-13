@@ -1,5 +1,6 @@
 package com.example.szachy_mobilne_2
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -16,7 +17,16 @@ class DatabaseActivity : AppCompatActivity() {
         setContentView(R.layout.database_listview)
         val databaseListView : ListView = findViewById(R.id.database_listview_id)
         val databaseGames = database!!.dao.getGamesOrderedByDate();
+        databaseListView.setOnItemClickListener { parent, view, position, id ->
+            val selectedGame = databaseGames[position]
 
+            val intent = Intent(this, DatabaseGameReplayActivity::class.java)
+
+            // Pass the game object to the new activity
+            //intent.putExtra("selected_game", selectedGame)
+
+            startActivity(intent)
+        }
         val adapter = ArrayAdapter(applicationContext,android.R.layout.simple_list_item_1,databaseGames)
         databaseListView.adapter = adapter
         configureMainMenuButton()

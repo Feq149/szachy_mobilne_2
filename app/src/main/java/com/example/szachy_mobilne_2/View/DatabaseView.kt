@@ -14,4 +14,5 @@ class DatabaseView(context: Context?, attrs: AttributeSet?) : View(context,attrs
         testPaint.color = Color.RED;
         canvas.drawRect(0F, 0F,200F,300F, testPaint)
     }
+
 }
