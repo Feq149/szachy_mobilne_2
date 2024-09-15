@@ -1,10 +1,13 @@
 package com.example.szachy_mobilne_2
 
+import android.nfc.Tag
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.szachy_mobilne_2.FullGameControl.GameReplayController
 import com.example.szachy_mobilne_2.View.ChessView
 import com.example.szachy_mobilne_2.View.ReplayDbGameView
 
@@ -12,10 +15,29 @@ class DatabaseGameReplayActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.db_game_replay_view)
-        configureGoBackButtonButton()
+        configureGoBackButton()
         configureDeleteGameButton()
+        configureNextButton()
+        configurePrevButton()
+        val gameId = intent.getIntExtra("game_id",-1)
+        if(gameId == -1) {
+            Log.d(null,"id of replayed game was not provided")
+            finish()
+        }
+
         val view = findViewById<ReplayDbGameView>(R.id.database_game_view)
+        val games = database!!.dao.getGamesOrderedByDate()
+        for (game in games) {
+            if(game.id == gameId) {
+                view.gameReplayController = GameReplayController(game)
+            }
+        }
+        if(view.gameReplayController == null) {
+            Log.d(null,"provided id of replayed game was not in database")
+            finish()
+        }
         view.invalidate()
+
     }
 
     fun configureDeleteGameButton() {
@@ -24,7 +46,13 @@ class DatabaseGameReplayActivity : AppCompatActivity() {
             showDeleteConfirmationDialog()
         }
     }
-    fun configureGoBackButtonButton() {
+    fun configureNextButton() {
+
+    }
+    fun configurePrevButton() {
+
+    }
+    fun configureGoBackButton() {
         val button = findViewById<Button>(R.id.go_back_to_list_of_games_button)
         button.setOnClickListener {
             finish()

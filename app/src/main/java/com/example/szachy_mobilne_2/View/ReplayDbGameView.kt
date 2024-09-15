@@ -6,12 +6,12 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
-import com.example.szachy_mobile.Game
-import com.example.szachy_mobilne_2.FullGameControl.GameController
+import com.example.szachy_mobile.Board
+import com.example.szachy_mobilne_2.FullGameControl.GameReplayController
 import com.example.szachy_mobilne_2.R
-import com.example.szachy_mobilne_2.database.GameDb
 import kotlin.math.min
 
 class ReplayDbGameView (context: Context?, attrs: AttributeSet?) : View(context,attrs) {
@@ -23,9 +23,8 @@ class ReplayDbGameView (context: Context?, attrs: AttributeSet?) : View(context,
     val dark_color = Paint()
     val pieceToBitmapConverter = mutableMapOf<Pieces, Bitmap>()
     val paint = Paint()
-    //var game = GameDb();
+    var gameReplayController : GameReplayController? = null
     val modelToViewConverter = ModelToViewConverter()
-
     val colors = arrayOf(light_color,dark_color)
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -34,7 +33,7 @@ class ReplayDbGameView (context: Context?, attrs: AttributeSet?) : View(context,
         light_color.color = Color.LTGRAY
         dark_color.color = Color.CYAN
         drawBoard(canvas)
-        //drawPiecesAtBoard(canvas,gameController.game.board)
+        drawPiecesAtBoard(canvas,gameReplayController!!.getCurrentPosition())
     }
     fun prepareBitmaps() {
         pieceToBitmapConverter[Pieces.white_bishop] = BitmapFactory.decodeResource(resources,
@@ -84,6 +83,7 @@ class ReplayDbGameView (context: Context?, attrs: AttributeSet?) : View(context,
     }
 
 
+
     fun drawBoard(canvas: Canvas) {
         if(true) {
             drawBoardIfUserWhite(canvas)
@@ -121,4 +121,39 @@ class ReplayDbGameView (context: Context?, attrs: AttributeSet?) : View(context,
             }
         }
     }
+    fun drawPieceAtSquare(canvas:Canvas,x:Int,y:Int, piece: Pieces) {
+        canvas.drawBitmap(pieceToBitmapConverter[piece]!! ,null, RectF(odleglosc_od_lewej + y * bok,odleglosc_od_gory + x * bok,odleglosc_od_lewej + (y + 1)*bok,odleglosc_od_gory + (x + 1)*bok),paint)
+    }
+
+    fun drawPiecesAtBoard(canvas:Canvas,board:Board) {
+        if(gameReplayController!!.userIsWhite) {
+            drawPiecesAtBoardIfUserWhite(canvas,board)
+        } else {
+            drawPiecesAtBoardIfUserBlack(canvas,board)
+        }
+
+    }
+    fun drawPiecesAtBoardIfUserWhite(canvas:Canvas,board:Board) {
+        for (i in 0..7) {
+            for (j in 0..7) {
+                val piece = modelToViewConverter.getViewPieceFromModelPiece(board.rows[i][j]) ?: continue
+                drawPieceAtSquare(canvas, i, j, piece)
+
+
+            }
+        }
+    }
+    fun drawPiecesAtBoardIfUserBlack(canvas:Canvas,board:Board) {
+        for (i in 0..7) {
+            for (j in 0..7) {
+                val piece = modelToViewConverter.getViewPieceFromModelPiece(board.rows[7 - i][7 - j]) ?: continue
+
+                drawPieceAtSquare(canvas, i, j, piece)
+
+
+            }
+        }
+    }
+
+
 }
