@@ -18,16 +18,16 @@ class GameReplayController(gameDb: GameDb) {
         val uselessMove = Pair(Pair(1,2),Pair(3,4))
         val result = mutableListOf(uselessMove)
         result.removeAt(0)
-        for(i in 0..listOfIndividualStringMoves.size) {
+        for(i in 0..listOfIndividualStringMoves.size - 2) {
             val moveNoSpaces = listOfIndividualStringMoves[i].split(" ")
-            val move = Pair(Pair(moveNoSpaces[0].toInt(),moveNoSpaces[1].toInt()),Pair(moveNoSpaces[4].toInt(),moveNoSpaces[5].toInt()))
+            val move = Pair(Pair(moveNoSpaces[0].toInt(),moveNoSpaces[1].toInt()),Pair(moveNoSpaces[3].toInt(),moveNoSpaces[4].toInt()))
             result.add(move)
         }
         return result
     }
     fun getCurrentPosition():Board {
         val result = Board()
-        for(i in 0..currentMove) {
+        for(i in 0..<currentMove) {
             result.movePiece(moves[i].first,moves[i].second)
         }
         return result

@@ -1,5 +1,6 @@
 package com.example.szachy_mobilne_2
 
+import android.content.Intent
 import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,7 @@ import com.example.szachy_mobilne_2.View.ChessView
 import com.example.szachy_mobilne_2.View.ReplayDbGameView
 
 class DatabaseGameReplayActivity : AppCompatActivity() {
+    var view : ReplayDbGameView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.db_game_replay_view)
@@ -25,18 +27,18 @@ class DatabaseGameReplayActivity : AppCompatActivity() {
             finish()
         }
 
-        val view = findViewById<ReplayDbGameView>(R.id.database_game_view)
+        view = findViewById<ReplayDbGameView>(R.id.database_game_view)
         val games = database!!.dao.getGamesOrderedByDate()
         for (game in games) {
             if(game.id == gameId) {
-                view.gameReplayController = GameReplayController(game)
+                view!!.gameReplayController = GameReplayController(game)
             }
         }
-        if(view.gameReplayController == null) {
+        if(view!!.gameReplayController == null) {
             Log.d(null,"provided id of replayed game was not in database")
             finish()
         }
-        view.invalidate()
+        view!!.invalidate()
 
     }
 
@@ -47,10 +49,18 @@ class DatabaseGameReplayActivity : AppCompatActivity() {
         }
     }
     fun configureNextButton() {
-
+        val button = findViewById<Button>(R.id.next_move_button)
+        button.setOnClickListener {
+            view?.gameReplayController?.turnToNextMoveAndGetThePosition()
+            view?.invalidate()
+        }
     }
     fun configurePrevButton() {
-
+        val button = findViewById<Button>(R.id.previous_move_button)
+        button.setOnClickListener {
+            view?.gameReplayController?.turnToPreviousMoveAndGetThePosition()
+            view?.invalidate()
+        }
     }
     fun configureGoBackButton() {
         val button = findViewById<Button>(R.id.go_back_to_list_of_games_button)
