@@ -8,12 +8,22 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LifecycleCoroutineScope
 import com.example.szachy_mobilne_2.FullGameControl.GameReplayController
 import com.example.szachy_mobilne_2.View.ChessView
 import com.example.szachy_mobilne_2.View.ReplayDbGameView
+import com.example.szachy_mobilne_2.database.GameDb
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class DatabaseGameReplayActivity : AppCompatActivity() {
     var view : ReplayDbGameView? = null
+    var gameDb : GameDb? = null
+    var gameId : Int = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.db_game_replay_view)
@@ -21,7 +31,8 @@ class DatabaseGameReplayActivity : AppCompatActivity() {
         configureDeleteGameButton()
         configureNextButton()
         configurePrevButton()
-        val gameId = intent.getIntExtra("game_id",-1)
+       gameId = intent.getIntExtra("game_id",-1)
+
         if(gameId == -1) {
             Log.d(null,"id of replayed game was not provided")
             finish()
@@ -31,6 +42,7 @@ class DatabaseGameReplayActivity : AppCompatActivity() {
         val games = database!!.dao.getGamesOrderedByDate()
         for (game in games) {
             if(game.id == gameId) {
+                gameDb = game
                 view!!.gameReplayController = GameReplayController(game)
             }
         }
@@ -88,8 +100,12 @@ class DatabaseGameReplayActivity : AppCompatActivity() {
             // Handle the delete action
             deleteGame()
             Toast.makeText(this, "Game deleted", Toast.LENGTH_SHORT).show()
-            deleteGame()
             dialog.dismiss()
+
+            databaseGames?.remove(gameDb)
+            adapter?.notifyDataSetChanged()
+
+            finish()
         }
 
         btnCancel.setOnClickListener {
@@ -101,6 +117,8 @@ class DatabaseGameReplayActivity : AppCompatActivity() {
     }
 
     fun deleteGame() {
-
+        MainScope().launch {
+            database!!.dao.deleteGame(gameDb!!)
+        }
     }
 }
