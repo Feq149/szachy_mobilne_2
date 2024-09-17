@@ -55,16 +55,5 @@ class MainActivity : AppCompatActivity() {
     }
 
     //broken, to be deleted probably
-    public fun showVictoryPopup() {
-        var view = View.inflate(this,R.layout.victoryscreen,null)
-        val close = view.findViewById<Button>(R.id.close_victory_screen)
-        val width = LinearLayout.LayoutParams.WRAP_CONTENT
-        val height = LinearLayout.LayoutParams.WRAP_CONTENT
-        var popUp = PopupWindow(view,width, height,true)
-        close.setOnClickListener {
-            popUp.dismiss()
-        }
-        popUp.showAtLocation(view,Gravity.CENTER,0,0)
 
-    }
 }

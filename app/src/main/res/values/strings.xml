@@ -15,4 +15,5 @@
     <string name="next">next</string>
     <string name="back">"back</string>
     <string name="configure_challenge_settings">configure challenge settings</string>
+    <string name="receive_challenge">receive challenge</string>
 </resources>

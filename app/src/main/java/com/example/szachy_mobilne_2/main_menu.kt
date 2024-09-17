@@ -31,18 +31,20 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
+import kotlin.concurrent.thread
 
 var database : DatabaseOfGames? = null
 var gameSettings = GameSettings("PC","Random")
 var socket: BluetoothSocket? = null
-class main_menu<BluetoothServerSocket> : AppCompatActivity() {
+class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListener {
     val opponents = mutableListOf("PC","Online")
-    var opponentName : String = "PC"
+    var opponentName = "PC"
     var playerColor = "Random"
     private val appName = "Mobilne_Szachy"
     private val uuid: UUID = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66")
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
-
+    var serverSocket: android.bluetooth.BluetoothServerSocket? = null
+    val eventListener : IncomingGameListener = this
     private fun enableBluetooth() {
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "Device doesn't support Bluetooth", Toast.LENGTH_SHORT).show()
@@ -67,20 +69,38 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity() {
         configurePlayGameButton()
         configureDatabaseButton()
         configureGameChallengeButton()
-        var list : List<GameDb>? = null
-
-            list = database!!.dao.getGamesOrderedByDate()
+        startAwaitingForUpcomingChallenge()
 
 
-        if(list == null ){
-            Log.d(tag,"dupa")
-        } else {
-            for(a in list!!) {
-                Log.d(tag,a.game)
-            }
-        }
 
     }
+
+    override fun onEventTriggered(event: IncomingGameEvent) {
+        Toast.makeText(this,"socket accept successful",Toast.LENGTH_LONG).show()
+    }
+
+    private fun startAwaitingForUpcomingChallenge() {
+        thread {
+            var shouldLoop = true
+            while(shouldLoop) {
+
+                socket = try {
+                    serverSocket?.accept()
+                } catch (e: IOException) {
+                    Log.e("second thread", "Socket's accept() method failed", e)
+                    shouldLoop = false
+                    null
+                }
+                socket?.also {
+                    //manageMyConnectedSocket(it)
+                    //mmServerSocket?.close()
+                    eventListener.onEventTriggered(IncomingGameEvent())
+                    shouldLoop = false
+                }
+            }
+        }
+    }
+
     fun configureDatabaseButton() {
         val button = findViewById<Button>(R.id.view_games_played_button)
         button.setOnClickListener {
@@ -123,13 +143,19 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity() {
         button.setOnClickListener {
             if(opponentName != "PC") {
                 checkBluetoothPermissions()
-                if (bluetoothAdapter?.isEnabled == true) {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        startBluetoothConnection()
-                    }
-                } else {
+                if (bluetoothAdapter?.isEnabled != true) {
                     enableBluetooth()
+
+
                 }
+              //  CoroutineScope(Dispatchers.IO).launch {
+                startBluetoothConnection()
+
+              //  }
+                //val intent =  Intent(this,MainActivity::class.java)
+                //gameSettings = GameSettings(opponentName, playerColor)
+
+                //startActivity(intent)
             } else {
                 val intent =  Intent(this,MainActivity::class.java)
                 gameSettings = GameSettings(opponentName, playerColor)
@@ -139,8 +165,8 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity() {
         }
 
     }
-    private suspend fun startBluetoothConnection() {
-        // Start the server for now (you could also implement client connection here based on logic)
+    private fun startBluetoothConnection() {
+
         startServer()
     }
 
@@ -250,7 +276,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity() {
 
 
     private fun startServer() {
-        var serverSocket: android.bluetooth.BluetoothServerSocket? = null
+
         try {
 
 

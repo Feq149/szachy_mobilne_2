@@ -37,4 +37,14 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view_games_played_button" />
+
+    <Button
+        android:id="@+id/receive_incoming_challenge"
+        android:layout_width="180dp"
+        android:layout_height="100dp"
+        android:text="@string/receive_challenge"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/challenge_settings" />
 </androidx.constraintlayout.widget.ConstraintLayout>
