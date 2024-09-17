@@ -69,6 +69,15 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
         configurePlayGameButton()
         configureDatabaseButton()
         configureGameChallengeButton()
+        try {
+
+
+            serverSocket = bluetoothAdapter?.listenUsingRfcommWithServiceRecord(appName, uuid)
+        }
+        catch (e : SecurityException) {
+            Log.d("","permissions are screwed")
+            return
+        }
         startAwaitingForUpcomingChallenge()
 
 
@@ -99,6 +108,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 }
             }
         }
+        var i = 1
     }
 
     fun configureDatabaseButton() {
@@ -277,15 +287,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
 
     private fun startServer() {
 
-        try {
 
-
-             serverSocket = bluetoothAdapter?.listenUsingRfcommWithServiceRecord(appName, uuid)
-        }
-        catch (e : SecurityException) {
-            Log.d("","permissions are screwed")
-            return
-        }
 
 
         try {
