@@ -27,8 +27,10 @@ import android.os.Parcel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
+import java.io.InputStreamReader
 import java.io.OutputStream
 import java.util.UUID
 import kotlin.concurrent.thread
@@ -85,12 +87,15 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
     }
 
     override fun onEventTriggered(event: IncomingGameEvent) {
-        Toast.makeText(this,"socket accept successful",Toast.LENGTH_LONG).show()
+        manageConnectedSocket(socket!!)
+        //Toast.makeText(this,"socket accept successful",Toast.LENGTH_LONG).show()
+    // val i = 4;
     }
 
     private fun startAwaitingForUpcomingChallenge() {
         thread {
             var shouldLoop = true
+
             while(shouldLoop) {
 
                 socket = try {
@@ -108,7 +113,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 }
             }
         }
-        var i = 1
+
     }
 
     fun configureDatabaseButton() {
@@ -311,18 +316,24 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
     private fun manageConnectedSocket(socket: BluetoothSocket) {
         val inputStream: InputStream = socket.inputStream
         val outputStream: OutputStream = socket.outputStream
-
+        val bufferedReader = BufferedReader(InputStreamReader(socket.inputStream))
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 // Send GameSettings to the client
                 gameSettings = GameSettings(opponentName, playerColor)
                 val serializedGameSettings = serializeGameSettings(gameSettings)
-                outputStream.write(serializedGameSettings)
+               // outputStream.write(serializedGameSettings)
 
                 // Listen for response from client
-                val buffer = ByteArray(1024)
-                var bytes = inputStream.read(buffer)
-                val message = String(buffer, 0, bytes)
+               // val buffer = ByteArray(1024)
+                //var bytes = inputStream.read(buffer)
+                var message  = bufferedReader.readLine()
+                while(message != null) {
+                    message = bufferedReader.readLine()
+                }
+
+
+
                 Log.d("Bluetooth", "Received message: $message")
             } catch (e: IOException) {
                 Log.e("Bluetooth", "Error managing socket", e)
