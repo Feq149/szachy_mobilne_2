@@ -11,10 +11,10 @@ import java.util.Timer
 
 import kotlin.concurrent.timerTask
 
-class GameController(chessView: ChessView) {
+open class GameController(chessView: ChessView) {
 
     val game = Game()
-    val userIsWhite = listOf(true,false).random()
+    var userIsWhite = listOf(true,false).random()
     val chessView : ChessView
     var gameHistory = ""
     val date = java.util.Date()
@@ -54,7 +54,7 @@ class GameController(chessView: ChessView) {
 
     }
 
-    fun getOpponentMovePlayed() {
+    open fun getOpponentMovePlayed() {
         if(game.isGameFinished) {
             return
         }
@@ -92,7 +92,7 @@ class GameController(chessView: ChessView) {
         return res
     }
 
-    fun makeAMove(move: Pair<Pair<Int,Int>,Pair<Int,Int>>) :Boolean{
+    open fun makeAMove(move: Pair<Pair<Int,Int>,Pair<Int,Int>>) :Boolean{
         if(game.makeAMove(move)) {
             gameHistory += moveToStringConverter(move)
             if(game.isGameFinished) {
