@@ -20,6 +20,7 @@ import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
+import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Parcel
@@ -129,7 +130,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
             pairedDevices = bluetoothAdapter?.bondedDevices
 
             pairedDevices?.forEach { device ->
-                val connectThread = ConnectThread(device, this, this)
+
                 //connectThread.start()
                 val deviceName = device.name
                 val deviceHardwareAddress = device.address // MAC address
@@ -137,7 +138,22 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 if (deviceName.contains("Galaxy")) {
                     socket =
                         device.createRfcommSocketToServiceRecord(uuid)
-                    connectThread.start()
+                    try {
+                        bluetoothAdapter?.cancelDiscovery()
+                        // Connect to the remote device through the socket. This call blocks
+                        // until it succeeds or throws an exception.
+                        socket!!.connect()
+                    } catch (connectException: IOException) {
+                        // Unable to connect; close the socket and return.
+                        try {
+                            socket!!.close()
+                        } catch (closeException: IOException) {
+                            Log.e(ContentValues.TAG, "Could not close the client socket", closeException)
+                        }
+                        return
+                    } catch (e: Exception) {
+                        val i = 6
+                    }
                     challengeInProgress = true
                     foundConnection = true
                 }
@@ -431,7 +447,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                     playerColor = "Random"
                     socket.close();
                 }
-                eventListener.onEventTriggered(IncomingGameEvent(message))
+                //eventListener.onEventTriggered(IncomingGameEvent(message))
                 if(areWeTheClient) {
                     if(message != "ok") {
                         Log.d("messages","failed to receive 'ok' confirmation")
