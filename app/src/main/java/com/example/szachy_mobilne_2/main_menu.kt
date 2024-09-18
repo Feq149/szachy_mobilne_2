@@ -135,7 +135,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 val deviceHardwareAddress = device.address // MAC address
 
                 if (deviceName.contains("Galaxy")) {
-                    var tmp =
+                    socket =
                         device.createRfcommSocketToServiceRecord(uuid)
                     connectThread.start()
                     challengeInProgress = true
@@ -221,9 +221,9 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
             }
         }
     }
-    fun sendMessageViaSocket(mmSocket : BluetoothSocket?,message:String) {
+    fun sendMessageViaSocket(message:String) {
         try {
-            OutputStreamWriter(mmSocket!!.outputStream, StandardCharsets.UTF_8).use { writer ->
+            OutputStreamWriter(socket!!.outputStream, StandardCharsets.UTF_8).use { writer ->
                 writer.write(message + "\n")
                 writer.flush()
 
@@ -266,7 +266,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 if(playerColor == "Black") {
                     message = "White\n"
                 }
-                sendMessageViaSocket(socket,message)
+                sendMessageViaSocket(message)
               //  }
                 //val intent =  Intent(this,MainActivity::class.java)
                 //gameSettings = GameSettings(opponentName, playerColor)
@@ -487,7 +487,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 }
                 gameSettings.color = colorToPlay;
                 gameSettings.opponentName = opponentName;
-                sendMessageViaSocket(socket,"ok\n")
+                sendMessageViaSocket("ok\n")
                 this.onEventTriggered(ChallengeAcceptedEvent())
 
                 dialog.dismiss()

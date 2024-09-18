@@ -22,7 +22,6 @@ class ConnectThread  constructor(
 ) :
     Thread() {
 
-    private val mmDevice: BluetoothDevice
     private val context: Context
     private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private val activity: AppCompatActivity
@@ -30,7 +29,6 @@ class ConnectThread  constructor(
     init {
         // Use a temporary object that is later assigned to mmSocket
         // because mmSocket is final.
-        var tmp: BluetoothSocket? = null
         this.context = context
         this.activity = activity
         val bluetoothPermissions = arrayOf<String>(
@@ -53,16 +51,8 @@ class ConnectThread  constructor(
         if (missingPermissions) {
             ActivityCompat.requestPermissions(activity, bluetoothPermissions, 1)
         }
-        mmDevice = device
-        try {
-            // Get a BluetoothSocket to connect with the given BluetoothDevice.
-            // MY_UUID is the app's UUID string, also used in the server code.
-            tmp =
-                device.createRfcommSocketToServiceRecord(uuid)
-        } catch (e: IOException) {
-            Log.e(TAG, "Socket's create() method failed", e)
-        }
-        socket = tmp
+
+
     }
 
     override fun run() {
@@ -119,18 +109,5 @@ class ConnectThread  constructor(
         }
     }
 
-    public fun manageMyConnectedSocket(mmSocket: BluetoothSocket?, message : String) {
-        try {
-            OutputStreamWriter(mmSocket!!.outputStream, UTF_8).use { writer ->
-                writer.write(message + "\n")
-                writer.flush()
 
-            }
-        } catch (e: IOException) {
-            val i = 5
-        } catch (e: InterruptedException) {
-            throw RuntimeException(e)
-        }
-        println(mmSocket!!.isConnected)
-    }
 }
