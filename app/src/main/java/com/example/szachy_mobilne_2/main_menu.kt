@@ -174,7 +174,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 socket?.also {
                     //manageMyConnectedSocket(it)
                     //mmServerSocket?.close()
-                    areWeTheClient = true
+                    areWeTheClient = false
 
                     manageConnectedSocket(socket!!)
 

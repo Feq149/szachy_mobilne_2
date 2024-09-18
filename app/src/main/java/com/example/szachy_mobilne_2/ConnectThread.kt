@@ -107,7 +107,7 @@ class ConnectThread  constructor(
 
         // The connection attempt succeeded. Perform work associated with
         // the connection in a separate thread.
-        manageMyConnectedSocket(mmSocket, "Hello")
+       // manageMyConnectedSocket(mmSocket, "Hello")
     }
 
     // Closes the client socket and causes the thread to finish.
