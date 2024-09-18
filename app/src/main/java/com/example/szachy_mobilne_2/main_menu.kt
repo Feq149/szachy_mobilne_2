@@ -1,7 +1,6 @@
 package com.example.szachy_mobilne_2
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
@@ -17,10 +16,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.szachy_mobilne_2.FullGameControl.GameSettings
 import com.example.szachy_mobilne_2.database.DatabaseOfGames
-import com.example.szachy_mobilne_2.database.GameDb
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothServerSocket
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.pm.PackageManager
 import android.os.Parcel
@@ -32,12 +30,15 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
+import java.io.OutputStreamWriter
+import java.nio.charset.StandardCharsets
 import java.util.UUID
 import kotlin.concurrent.thread
 
 var database : DatabaseOfGames? = null
 var gameSettings = GameSettings("PC","Random")
 var socket: BluetoothSocket? = null
+
 class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListener {
     val opponents = mutableListOf("PC","Online")
     var opponentName = "PC"
@@ -47,6 +48,8 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     var serverSocket: android.bluetooth.BluetoothServerSocket? = null
     val eventListener : IncomingGameListener = this
+    var areWeTheClient = false
+    var challengeInProgress = false
     private fun enableBluetooth() {
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "Device doesn't support Bluetooth", Toast.LENGTH_SHORT).show()
@@ -63,6 +66,13 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
 
             }
         }
+    }
+
+    override fun onEventTriggered(event: ChallengeAcceptedEvent) {
+        val intent =  Intent(this,MainActivity::class.java)
+
+
+        startActivity(intent)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +96,43 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
 
     }
 
+    private fun startClient() {
+        val bluetoothPermissions = arrayOf(
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.BLUETOOTH_CONNECT
+
+        )
+        if (bluetoothPermissions.any {
+                ActivityCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+            }) {
+            ActivityCompat.requestPermissions(this, bluetoothPermissions, 1)
+        }
+        try {
+            var pairedDevices: Set<BluetoothDevice>? = null
+
+            pairedDevices = bluetoothAdapter?.bondedDevices
+
+            pairedDevices?.forEach { device ->
+                val connectThread = ConnectThread(device, this, this)
+                //connectThread.start()
+                val deviceName = device.name
+                val deviceHardwareAddress = device.address // MAC address
+                if (deviceName.contains("OPPO")) {
+                    connectThread.start()
+                }
+                val i = 6;
+                //return
+            }
+
+        } catch (e: SecurityException) {
+            challengeInProgress = false
+        }
+    }
     override fun onEventTriggered(event: IncomingGameEvent) {
+        startClient()
         manageConnectedSocket(socket!!)
         //Toast.makeText(this,"socket accept successful",Toast.LENGTH_LONG).show()
     // val i = 4;
@@ -108,6 +154,10 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 socket?.also {
                     //manageMyConnectedSocket(it)
                     //mmServerSocket?.close()
+                    areWeTheClient = true
+
+                    manageConnectedSocket(socket!!)
+
                     eventListener.onEventTriggered(IncomingGameEvent())
                     shouldLoop = false
                 }
@@ -152,11 +202,27 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
             }
         }
     }
+    fun sendMessageViaSocket(mmSocket : BluetoothSocket?,message:String) {
+        try {
+            OutputStreamWriter(mmSocket!!.outputStream, StandardCharsets.UTF_8).use { writer ->
+                writer.write(message + "\n")
+                writer.flush()
 
+            }
+        } catch (e: IOException) {
+            val i = 5
+        } catch (e: InterruptedException) {
+            throw RuntimeException(e)
+        }
+    }
     fun configurePlayGameButton() {
         val button = findViewById<Button>(R.id.game_button)
         button.setOnClickListener {
+            if(challengeInProgress) {
+                return@setOnClickListener
+            }
             if(opponentName != "PC") {
+                challengeInProgress = true
                 checkBluetoothPermissions()
                 if (bluetoothAdapter?.isEnabled != true) {
                     enableBluetooth()
@@ -164,7 +230,8 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
 
                 }
               //  CoroutineScope(Dispatchers.IO).launch {
-                startBluetoothConnection()
+                areWeTheClient = true
+                startClient()
 
               //  }
                 //val intent =  Intent(this,MainActivity::class.java)
@@ -180,10 +247,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
         }
 
     }
-    private fun startBluetoothConnection() {
 
-        startServer()
-    }
 
     fun configureGameChallengeButton() {
         val button = findViewById<Button>(R.id.challenge_settings)
@@ -241,7 +305,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
             // Handle special actions: Add new opponent or Delete an opponent
             when (selectedOpponent) {
                 "Online" -> {
-                    showAddOpponentDialog(adapter)
+                    showAddOpponentDialog()
                 }
                 else -> {
                     // Check which color is selected
@@ -268,7 +332,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
         val dialog = builder.create()
         dialog.show()
     }
-    private fun showAddOpponentDialog(adapter: ArrayAdapter<String>) {
+    private fun showAddOpponentDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Name your opponent")
 
@@ -321,15 +385,41 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
             try {
                 // Send GameSettings to the client
                 gameSettings = GameSettings(opponentName, playerColor)
-                val serializedGameSettings = serializeGameSettings(gameSettings)
+
                // outputStream.write(serializedGameSettings)
 
                 // Listen for response from client
                // val buffer = ByteArray(1024)
                 //var bytes = inputStream.read(buffer)
                 var message  = bufferedReader.readLine()
-                while(message != null) {
-                    message = bufferedReader.readLine()
+                if(message == null) {
+                    opponentName = "PC"
+                    playerColor = "Random"
+                    socket.close();
+                }
+                if(areWeTheClient) {
+                    if(message != "ok") {
+                        Log.d("messages","failed to receive 'ok' confirmation")
+                        opponentName = "PC"
+                        playerColor = "Random"
+                        socket.close();
+                        areWeTheClient = false
+                        return@launch
+                    } else {
+
+                        eventListener.onEventTriggered(ChallengeAcceptedEvent())
+                        return@launch
+                    }
+                }
+                if(message.equals("Random") || message.equals("Black") || message.equals("White")) {
+                    playerColor = message
+                    showAddOpponentDialog()
+                } else {
+                    Log.d(tag, "$message is not a message in valid format")
+                    opponentName = "PC"
+                    playerColor = "Random"
+                    socket.close();
+                    challengeInProgress = false
                 }
 
 
@@ -337,31 +427,19 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 Log.d("Bluetooth", "Received message: $message")
             } catch (e: IOException) {
                 Log.e("Bluetooth", "Error managing socket", e)
+                opponentName = "PC"
+                playerColor = "Random"
+                challengeInProgress = false
             }
         }
     }
-    private fun serializeGameSettings(gameSettings: GameSettings): ByteArray {
-        // Parcel the GameSettings object
-        val parcel = Parcel.obtain()
-        gameSettings.writeToParcel(parcel, 0)
-        val serializedGameSettings = parcel.marshall()
-        parcel.recycle()
-        return serializedGameSettings
-    }
-    private fun deserializeGameSettings(data: ByteArray): GameSettings {
-        val parcel = Parcel.obtain()
-        parcel.unmarshall(data, 0, data.size)
-        parcel.setDataPosition(0)
-        val gameSettings = GameSettings.CREATOR.createFromParcel(parcel)
-        parcel.recycle()
-        return gameSettings
-    }
 
-    private fun showChallengeDialog(gameSettings: GameSettings) {
+
+    private fun showChallengeDialog(colorToPlay : String) {
         runOnUiThread {
             val builder = AlertDialog.Builder(this@main_menu)
             builder.setTitle("Game Challenge")
-            builder.setMessage("Opponent: ${gameSettings.opponentName} wants to play.\nColor: ${gameSettings.color}")
+            builder.setMessage("Opponent wants to play.\nColor: $colorToPlay")
 
             // Allow user to name their opponent
             val input = EditText(this@main_menu)
@@ -369,6 +447,14 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
 
             builder.setPositiveButton("Accept") { dialog, _ ->
                 opponentName = input.text.toString()
+                if(opponentName.all {it == ' ' } || opponentName == "" || opponentName == "PC" || opponentName.length > 20) {
+                    opponentName = "Random"
+                }
+                gameSettings.color = colorToPlay;
+                gameSettings.opponentName = opponentName;
+                sendMessageViaSocket(socket,"ok\n")
+                this.onEventTriggered(ChallengeAcceptedEvent())
+
                 dialog.dismiss()
             }
 

@@ -4,8 +4,8 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class GameSettings(
-    val opponentName: String,
-    val color: String
+    var opponentName: String,
+    var color: String
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
