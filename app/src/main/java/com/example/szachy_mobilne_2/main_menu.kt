@@ -171,7 +171,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
 
                     manageConnectedSocket(socket!!)
 
-                    eventListener.onEventTriggered(IncomingGameEvent())
+
                     shouldLoop = false
                 }
             }
@@ -412,6 +412,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                     playerColor = "Random"
                     socket.close();
                 }
+                eventListener.onEventTriggered(IncomingGameEvent(message))
                 if(areWeTheClient) {
                     if(message != "ok") {
                         Log.d("messages","failed to receive 'ok' confirmation")
