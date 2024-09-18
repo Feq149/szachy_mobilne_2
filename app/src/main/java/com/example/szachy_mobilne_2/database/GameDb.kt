@@ -12,6 +12,23 @@ data class GameDb(var result:Int = 0,
                   @PrimaryKey(autoGenerate = true)
                   var id: Int = 0,
                   var opponentName: String = "random"
-)
+) {
+    override fun toString(): String {
+        val stringBuilder = StringBuilder()
+        if(userIsWhite) {
+            stringBuilder.append("You vs $opponentName, ")
+        } else {
+            stringBuilder.append("$opponentName vs you, ")
+        }
+        if((result == 1 && userIsWhite) || (result == 0 && !userIsWhite) ) {
+            stringBuilder.append("1 - 0")
+        } else if(result == 0) {
+            stringBuilder.append("1/2 - 1/2")
+        } else {
+            stringBuilder.append("0 - 1")
+        }
+        return stringBuilder.toString()
+    }
+}
 
 

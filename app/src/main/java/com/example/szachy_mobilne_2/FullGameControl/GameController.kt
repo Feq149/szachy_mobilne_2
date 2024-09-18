@@ -18,6 +18,7 @@ open class GameController(chessView: ChessView) {
     val chessView : ChessView
     var gameHistory = ""
     val date = java.util.Date()
+    var opponentName = "PC"
     init{
         this.chessView = chessView
         this.chessView.gameController = this
@@ -43,7 +44,7 @@ open class GameController(chessView: ChessView) {
         } else {
             resultOfGameFromPlayersPerspective = -1
         }
-        val gameDb = GameDb(resultOfGameFromPlayersPerspective,userIsWhite,gameHistory,date.toString())
+        val gameDb = GameDb(resultOfGameFromPlayersPerspective,userIsWhite,gameHistory,date.toString(), opponentName = opponentName )
         chessView.findViewTreeLifecycleOwner()?.lifecycleScope?.launch {
             database?.dao?.upsertGame(gameDb)
         }

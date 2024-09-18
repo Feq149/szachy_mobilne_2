@@ -133,6 +133,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
     }
     override fun onEventTriggered(event: IncomingGameEvent) {
         startClient()
+
         manageConnectedSocket(socket!!)
         //Toast.makeText(this,"socket accept successful",Toast.LENGTH_LONG).show()
     // val i = 4;
@@ -413,7 +414,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 }
                 if(message.equals("Random") || message.equals("Black") || message.equals("White")) {
                     playerColor = message
-                    showAddOpponentDialog()
+                    showChallengeDialog(message)
                 } else {
                     Log.d(tag, "$message is not a message in valid format")
                     opponentName = "PC"

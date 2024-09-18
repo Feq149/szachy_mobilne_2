@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         configureReturnToMainMenuButton()
         val gameConfiguration = gameSettings
         var gameController = GameController(findViewById<ChessView>(R.id.chess_view))
+        gameController.opponentName = gameConfiguration.opponentName
         if(!gameConfiguration.opponentName.equals("PC")) {
             gameController = GameBluetoothController(findViewById<ChessView>(R.id.chess_view),
                 socket)
