@@ -116,7 +116,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
 
 
     private fun startClient() {
-
+        var foundConnection = false
         if (bluetoothPermissions.any {
                 ActivityCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
             }) {
@@ -132,21 +132,23 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 //connectThread.start()
                 val deviceName = device.name
                 val deviceHardwareAddress = device.address // MAC address
-                var foundConnection = false
+
                 if (deviceName.contains("Galaxy")) {
                     connectThread.start()
                     challengeInProgress = true
                     foundConnection = true
                 }
-                if(!foundConnection) {
-                    challengeInProgress = false
-                }
+
                 val i = 6;
                 //return
             }
 
         } catch (e: SecurityException) {
             challengeInProgress = false
+        } finally {
+            if(!foundConnection) {
+                challengeInProgress = false
+            }
         }
     }
     override fun onEventTriggered(event: IncomingGameEvent) {
