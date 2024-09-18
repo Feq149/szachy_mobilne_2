@@ -38,6 +38,15 @@ import kotlin.concurrent.thread
 var database : DatabaseOfGames? = null
 var gameSettings = GameSettings("PC","Random")
 var socket: BluetoothSocket? = null
+val bluetoothPermissions = arrayOf(
+    Manifest.permission.BLUETOOTH,
+    Manifest.permission.BLUETOOTH_ADMIN,
+    Manifest.permission.ACCESS_FINE_LOCATION,
+    Manifest.permission.ACCESS_COARSE_LOCATION,
+    Manifest.permission.BLUETOOTH_CONNECT,
+    Manifest.permission.BLUETOOTH_SCAN
+
+)
 
 class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListener {
     val opponents = mutableListOf("PC","Online")
@@ -97,14 +106,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
     }
 
     private fun startClient() {
-        val bluetoothPermissions = arrayOf(
-            Manifest.permission.BLUETOOTH,
-            Manifest.permission.BLUETOOTH_ADMIN,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.BLUETOOTH_CONNECT
 
-        )
         if (bluetoothPermissions.any {
                 ActivityCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
             }) {
@@ -120,7 +122,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 //connectThread.start()
                 val deviceName = device.name
                 val deviceHardwareAddress = device.address // MAC address
-                if (deviceName.contains("OPPO")) {
+                if (deviceName.contains("Galaxy")) {
                     connectThread.start()
                 }
                 val i = 6;
@@ -174,13 +176,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
             startActivity(intent)
         }
     }
-    private val bluetoothPermissions = arrayOf(
-        Manifest.permission.BLUETOOTH,
-        Manifest.permission.BLUETOOTH_ADMIN,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
 
-    )
 
     private fun checkBluetoothPermissions() {
         if (bluetoothPermissions.any {
