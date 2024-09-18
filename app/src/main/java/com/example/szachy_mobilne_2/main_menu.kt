@@ -131,8 +131,14 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 //connectThread.start()
                 val deviceName = device.name
                 val deviceHardwareAddress = device.address // MAC address
+                var foundConnection = false
                 if (deviceName.contains("Galaxy")) {
                     connectThread.start()
+                    challengeInProgress = true
+                    foundConnection = true
+                }
+                if(!foundConnection) {
+                    challengeInProgress = false
                 }
                 val i = 6;
                 //return
@@ -240,6 +246,13 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
               //  CoroutineScope(Dispatchers.IO).launch {
                 areWeTheClient = true
                 startClient()
+                if(!challengeInProgress) {
+                    opponentName = "PC"
+                    playerColor = "Random"
+                    Toast.makeText(this,"no connection established", Toast.LENGTH_LONG).show()
+                    return@setOnClickListener
+
+                }
                 var message = "Random\n"
                 if(playerColor == "White") {
                     message = "Black\n"
