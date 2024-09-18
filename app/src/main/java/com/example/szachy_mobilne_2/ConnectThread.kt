@@ -21,7 +21,7 @@ class ConnectThread  constructor(
     activity: AppCompatActivity
 ) :
     Thread() {
-    private val mmSocket: BluetoothSocket?
+
     private val mmDevice: BluetoothDevice
     private val context: Context
     private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -58,11 +58,11 @@ class ConnectThread  constructor(
             // Get a BluetoothSocket to connect with the given BluetoothDevice.
             // MY_UUID is the app's UUID string, also used in the server code.
             tmp =
-                device.createRfcommSocketToServiceRecord(UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66"))
+                device.createRfcommSocketToServiceRecord(uuid)
         } catch (e: IOException) {
             Log.e(TAG, "Socket's create() method failed", e)
         }
-        mmSocket = tmp
+        socket = tmp
     }
 
     override fun run() {
@@ -92,11 +92,11 @@ class ConnectThread  constructor(
             bluetoothAdapter.cancelDiscovery()
             // Connect to the remote device through the socket. This call blocks
             // until it succeeds or throws an exception.
-            mmSocket!!.connect()
+            socket!!.connect()
         } catch (connectException: IOException) {
             // Unable to connect; close the socket and return.
             try {
-                mmSocket!!.close()
+                socket!!.close()
             } catch (closeException: IOException) {
                 Log.e(TAG, "Could not close the client socket", closeException)
             }
@@ -113,7 +113,7 @@ class ConnectThread  constructor(
     // Closes the client socket and causes the thread to finish.
     fun cancel() {
         try {
-            mmSocket!!.close()
+            socket!!.close()
         } catch (e: IOException) {
             Log.e(TAG, "Could not close the client socket", e)
         }

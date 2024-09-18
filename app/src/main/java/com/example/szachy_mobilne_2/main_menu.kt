@@ -50,13 +50,13 @@ val bluetoothPermissions = arrayOf(
     Manifest.permission.BLUETOOTH_CONNECT
 
 )
-
+ val uuid: UUID = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66")
 class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListener {
     val opponents = mutableListOf("PC","Online")
     var opponentName = "PC"
     var playerColor = "Random"
     private val appName = "Mobilne_Szachy"
-    private val uuid: UUID = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66")
+
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     var serverSocket: android.bluetooth.BluetoothServerSocket? = null
     val eventListener : IncomingGameListener = this
@@ -123,6 +123,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
             ActivityCompat.requestPermissions(this, bluetoothPermissions, 1)
         }
         try {
+
             var pairedDevices: Set<BluetoothDevice>? = null
 
             pairedDevices = bluetoothAdapter?.bondedDevices
@@ -134,6 +135,8 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                 val deviceHardwareAddress = device.address // MAC address
 
                 if (deviceName.contains("Galaxy")) {
+                    var tmp =
+                        device.createRfcommSocketToServiceRecord(uuid)
                     connectThread.start()
                     challengeInProgress = true
                     foundConnection = true
@@ -177,7 +180,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
                     //manageMyConnectedSocket(it)
                     //mmServerSocket?.close()
                     areWeTheClient = false
-
+                    challengeInProgress = true
                     manageConnectedSocket(socket!!)
 
 
