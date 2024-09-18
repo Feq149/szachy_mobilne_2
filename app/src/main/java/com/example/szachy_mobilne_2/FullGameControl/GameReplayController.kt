@@ -1,6 +1,8 @@
 package com.example.szachy_mobilne_2.FullGameControl
 
 import com.example.szachy_mobile.Board
+import com.example.szachy_mobile.Pawn
+import com.example.szachy_mobile.Queen
 import com.example.szachy_mobilne_2.database.GameDb
 
 class GameReplayController(gameDb: GameDb) {
@@ -29,6 +31,14 @@ class GameReplayController(gameDb: GameDb) {
         val result = Board()
         for(i in 0..<currentMove) {
             result.movePiece(moves[i].first,moves[i].second)
+            for (j in 0..7) {
+                if(!result.rows[7][j].isWhite && result.rows[7][j] is Pawn) {
+                    result.rows[7][j] = Queen("queen",false,result)
+                }
+                if(result.rows[0][j].isWhite && result.rows[0][j] is Pawn) {
+                    result.rows[0][j] = Queen("queen",true,result)
+                }
+            }
         }
         return result
     }
