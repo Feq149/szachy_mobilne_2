@@ -21,7 +21,9 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Parcel
+import androidx.annotation.RequiresApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,13 +40,13 @@ import kotlin.concurrent.thread
 var database : DatabaseOfGames? = null
 var gameSettings = GameSettings("PC","Random")
 var socket: BluetoothSocket? = null
+
 val bluetoothPermissions = arrayOf(
     Manifest.permission.BLUETOOTH,
     Manifest.permission.BLUETOOTH_ADMIN,
     Manifest.permission.ACCESS_FINE_LOCATION,
     Manifest.permission.ACCESS_COARSE_LOCATION,
-    Manifest.permission.BLUETOOTH_CONNECT,
-    Manifest.permission.BLUETOOTH_SCAN
+
 
 )
 
@@ -83,8 +85,14 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
 
         startActivity(intent)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (bluetoothPermissions.any {
+                ActivityCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+            }) {
+            ActivityCompat.requestPermissions(this, bluetoothPermissions, 1)
+        }
         database = DatabaseOfGames.getDatabase(this)
         setContentView(R.layout.activity_main_menu)
         configurePlayGameButton()
@@ -104,6 +112,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
 
 
     }
+
 
     private fun startClient() {
 
@@ -134,9 +143,10 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
         }
     }
     override fun onEventTriggered(event: IncomingGameEvent) {
-        startClient()
+        showChallengeDialog(event.color)
+        //startClient()
 
-        manageConnectedSocket(socket!!)
+        //manageConnectedSocket(socket!!)
         //Toast.makeText(this,"socket accept successful",Toast.LENGTH_LONG).show()
     // val i = 4;
     }
@@ -212,6 +222,7 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
             throw RuntimeException(e)
         }
     }
+
     fun configurePlayGameButton() {
         val button = findViewById<Button>(R.id.game_button)
         button.setOnClickListener {
@@ -229,7 +240,14 @@ class main_menu<BluetoothServerSocket> : AppCompatActivity(),IncomingGameListene
               //  CoroutineScope(Dispatchers.IO).launch {
                 areWeTheClient = true
                 startClient()
-
+                var message = "Random\n"
+                if(playerColor == "White") {
+                    message = "Black\n"
+                }
+                if(playerColor == "Black") {
+                    message = "White\n"
+                }
+                sendMessageViaSocket(socket,message)
               //  }
                 //val intent =  Intent(this,MainActivity::class.java)
                 //gameSettings = GameSettings(opponentName, playerColor)

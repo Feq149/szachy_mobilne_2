@@ -1,5 +1,7 @@
 package com.example.szachy_mobilne_2
 
-class IncomingGameEvent {
+import android.graphics.Color
+
+class IncomingGameEvent(val color : String) {
 
 }
